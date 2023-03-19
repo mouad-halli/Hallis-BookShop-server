@@ -48,6 +48,7 @@ export interface IBook {
     rating: number
     description: string
     imgPath: string
+    archived: boolean
 }
 
 const bookSchema = new Schema<IBook>({
@@ -70,7 +71,9 @@ const bookSchema = new Schema<IBook>({
 
     bookLanguage: { type: String, enum: bookLanguage, required: true },
 
-    description: { type: String, default: '' }
+    description: { type: String, default: '' },
+
+    archived: { type: Boolean, default: false, select: false }
 
 }, /*{ timestamps: true }*/)
 

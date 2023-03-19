@@ -40,7 +40,7 @@ router.put('/:id', verifyToken, validateBody(validateUpdateBook), updateBook)
 
 router.put('/set-img/:id', verifyToken, upload.single('img'), setBookImage)
 
-router.delete('/', deleteAll)
+// router.delete('/', deleteAll)
 
 router.delete('/:id', verifyToken, deleteBook)
 

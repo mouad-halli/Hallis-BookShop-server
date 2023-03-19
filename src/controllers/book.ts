@@ -47,7 +47,7 @@ export const findSellerBooks = async (req: Request, res: Response, next: NextFun
 
 export const findBooksByLanguage = async (req, res, next) => {
     try {
-        const books = await Book.find({bookLanguage: req.query.q})
+        const books = await Book.find({bookLanguage: req.query.q, archived: false})
         res.status(OK).json(books)
     } catch (error) {
         next(error)
@@ -56,7 +56,7 @@ export const findBooksByLanguage = async (req, res, next) => {
 
 export const findBooksByGenre = async (req, res, next) => {
     try {
-        const books = await Book.find({genre: req.query.q})
+        const books = await Book.find({genre: req.query.q, archived: false})
         res.status(OK).json(books)
     } catch (error) {
         next(error)
@@ -65,7 +65,7 @@ export const findBooksByGenre = async (req, res, next) => {
 
 export const findAuthorBooks = async (req, res, next) => {
     try {
-        const books = await Book.find({author: req.query.q})
+        const books = await Book.find({author: req.query.q, archived: false})
         res.status(OK).json(books)
     } catch (error) {
         next(error)
@@ -75,7 +75,7 @@ export const findAuthorBooks = async (req, res, next) => {
 export const searchBooks = async (req, res, next) => {
     try {
         const searchQuery = req.query.q
-        const searchResult = await Book.find({ $text: { $search: searchQuery, $caseSensitive: false } }, "-__v").populate({ path: 'seller', select: '_id' })
+        const searchResult = await Book.find({archived: false, $text: { $search: searchQuery, $caseSensitive: false } }, "-__v").populate({ path: 'seller', select: '_id' })
         res.status(OK).json(searchResult)
     } catch (error) {
         next(error)
@@ -85,7 +85,7 @@ export const searchBooks = async (req, res, next) => {
 export const findLastAddedBooks = async (req, res, next) => {
     try {
         const limit: number = Number(req.params.limit) || 5
-        const books = await Book.find().sort([['_id', -1]]).select({ _id: 1, imgPath: 1, name: 1, author: 1, price: 1, genre: 1, description: 1 }).limit(limit)
+        const books = await Book.find({ archived: false }).sort([['_id', -1]]).select({ _id: 1, imgPath: 1, name: 1, author: 1, price: 1, genre: 1, description: 1 }).limit(limit)
         res.status(OK).json(books)
     } catch (error) {
         next(error)
@@ -102,7 +102,7 @@ export const findBook = async (req, res, next) => {
         if (!bookId)
             return next(createError(400, "please enter the Book id"))
 
-        const book = await Book.findById(bookId).populate({path: 'seller', select: 'username firstname lastname books', populate: {path: 'books', select: 'imgPath'}})
+        const book = await Book.findOne({ _id: bookId, archived: false }).populate({path: 'seller', select: 'username firstname lastname books', populate: {path: 'books', select: 'imgPath'}})
 
         if (!book)
             return next(createError(404, "book not found"))
@@ -121,7 +121,7 @@ export const findBook = async (req, res, next) => {
 export const findAllBooks = async (req, res, next) => {
 	try {
 
-        const books = await Book.find()
+        const books = await Book.find({ archived: false })
         
         res.status(OK).json(books)
 
@@ -132,7 +132,7 @@ export const findAllBooks = async (req, res, next) => {
 
 export const findUserBooks = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
-        const books = await Book.find({'seller': req.user._id,}, '-__v')
+        const books = await Book.find({'seller': req.user._id, archived: false}, '-__v')
         res.status(OK).json(books)
     } catch(error) {
         next(error)
@@ -162,8 +162,8 @@ export const updateBook = async (req, res, next) => {
         return next(createError(BAD_REQUEST, "invalid book id"))
     
 
-    const updatedBook = await Book.findByIdAndUpdate(
-        bookId,
+    const updatedBook = await Book.findOneAndUpdate(
+        { _id: bookId, archived: false},
         { $set: req.body },
         { new: true })
 
@@ -180,7 +180,7 @@ export const setBookImage = async (req: Request, res: Response, next: NextFuncti
 
         const imgPath = `${SERVER_URL}/${req.file.path}`
 
-        await Book.findOneAndUpdate({_id: bookId}, {imgPath: imgPath})
+        await Book.findOneAndUpdate( {_id: bookId, archived: false }, {imgPath: imgPath})
 
         res.status(CREATED).json(imgPath)
 
@@ -199,11 +199,12 @@ export const deleteBook = async (req: IGetUserAuthInfoRequest, res: Response, ne
 
         await Cart.updateMany({"items.product": bookId}, { $pull: { items: { 'product': bookId } } })
 
-        const bookImgFileName = await Book.findOneAndDelete({_id: bookId, seller: req.user._id}).then( async (book: IBook) => {
-            return book.imgPath.split('/').at(-1)
-        })
+        // const bookImgFileName = await Book.findOneAndDelete({_id: bookId, seller: req.user._id}).then( async (book: IBook) => {
+        //     return book.imgPath.split('/').at(-1)
+        // })
+        await Book.findOneAndUpdate({ _id: bookId, seller: req.user._id }, { archived: true })
 
-        deleteFileIfExist(bookImgFileName)
+        // deleteFileIfExist(bookImgFileName)
 
         res.status(OK).json("Book deleted succesfully")
 
