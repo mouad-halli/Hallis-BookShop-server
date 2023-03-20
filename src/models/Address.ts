@@ -3,11 +3,11 @@ import { IUser } from "./User"
 
 export interface IAddress {
     user: IUser
-    street1: String
-    street2: String
-    country: String
-    city: String
-    zipCode: Number
+    street1: string
+    street2: string
+    country: string
+    city: string
+    zipCode: string
 }
 
 const addressSchema = new Schema<IAddress>({
@@ -22,7 +22,7 @@ const addressSchema = new Schema<IAddress>({
     
     city: { type: String, },
 
-    zipCode: { type: Number },
+    zipCode: { type: String },
 
 })
 

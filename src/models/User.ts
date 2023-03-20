@@ -5,15 +5,16 @@ import { IBook } from "./Book";
 export interface IUser {
     _id?: Types.ObjectId
     username: string
-    firstname: String
-    lastname: String
+    firstname: string
+    lastname: string
     imgPath: string
     password?: string
     googleId?: number
-    phone?: number
+    phone?: string
     email: string
     address?: IAddress
     books?: IBook[]
+    stripeCustomerId?: string
 }
 
 
@@ -27,17 +28,19 @@ const UserSchema = new Schema<IUser>({
 
     imgPath: { type: String },
 
-    password: { type: String },
+    password: { type: String, select: false },
 
     googleId: { type: Number },
 
-    phone: { type: Number },
+    phone: { type: String },
 
     email: { type: String },
 
     address: { type: Schema.Types.ObjectId, ref: 'Address' },
 
     books: [{ type: Schema.Types.ObjectId, ref: 'Book' }],
+
+    stripeCustomerId: { type: String, default: null, select: false },
 
 } )
 

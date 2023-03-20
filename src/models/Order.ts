@@ -1,36 +1,58 @@
-import { Schema, model, Types } from "mongoose";
+import { Schema, model, Types, ObjectId } from "mongoose";
 import { IUser } from "./User";
-import { ICartItem, cartItemScema } from "./Cart";
 import { IAddress } from "./Address";
 
 
-export enum paymentStatus {
-    SUCCEED = 'succeed',
+export enum OrderStatus {
     FAILED = 'failed',
     PENDING = 'pending',
-    REFUNDED = 'refunded'
+    ACCEPTED = 'accepted',
+    CANCELED = 'canceled',
+    SHIPPED = 'shipped',
+    DELIVERED = 'delivered',
+    REFUNDED = 'refunded',
+}
+
+export interface IOrderItem {
+    seller: IUser
+    product: { _id: Types.ObjectId, name: String, imgPath: String, price: Number, quantity: Number }
+    status: String
+    trackingNumber?: Number
 }
 
 export interface IOrder {
     _id: Types.ObjectId
     customer: IUser
-    items: ICartItem[]
-    paymentStatus: String
-    address: IAddress
-    trackingNumber: Number
+    products: IOrderItem[]
+    status: String
+    address: Omit<IAddress, 'user'>
 }
 
 const orderSchema = new Schema<IOrder>({
 
     customer: { type: Schema.Types.ObjectId, ref: 'User' },
 
-    items: [cartItemScema],
-    
-    paymentStatus: { type: String, enum: paymentStatus, default: paymentStatus.PENDING },
+    products: [{
+        seller: { type: Schema.Types.ObjectId, ref: 'User' },
 
-    address: { type: Schema.Types.ObjectId, ref: 'Address' },
+        product: { _id: Schema.Types.ObjectId, name: String, imgPath: String, price: Number, quantity: Number },
 
-    trackingNumber: { type: Number, default: null }
+        status: { type: String, enum: OrderStatus, default: OrderStatus.PENDING },
+        
+        trackingNumber: { type: Number }
+    }],
+
+    address: {
+        street1: String,
+
+        street2: String,
+
+        country: String,
+
+        city: String,
+
+        zipCode: String
+    },
 
 }, { timestamps: true })
 

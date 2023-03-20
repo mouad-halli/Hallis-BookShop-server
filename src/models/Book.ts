@@ -79,6 +79,7 @@ const bookSchema = new Schema<IBook>({
 
 bookSchema.index({name: 'text', author: 'text', genre: 'text'})
 
+// Cascade Delete
 bookSchema.post("findOneAndDelete", async function(doc, next) {
 
     await User.findOneAndUpdate({ books: { $in: [doc._id] } }, { $pull: { books: doc._id } })

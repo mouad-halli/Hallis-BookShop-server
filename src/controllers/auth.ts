@@ -51,7 +51,7 @@ export const register = async (req: IGetUserAuthInfoRequest, res: Response, next
 export const login = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
 
-        const user: any = await User.findOne({username: req.body.username})
+        const user: any = await User.findOne({username: req.body.username}).select("+password")
 
         if (!user || !user.password)
             return next(createError(BAD_REQUEST, "Wrong password or username"))

@@ -13,7 +13,7 @@ export const me = async (req: IGetUserAuthInfoRequest, res: Response, next: Next
 
     try {
 
-        const me = await User.findById(req.user._id, "-__v -googleId -password -books")
+        const me = await User.findById(req.user._id, "-__v -googleId -books")
 
         if (!me)
             res.status(createError(NOT_FOUND, "user not found"))
@@ -120,7 +120,8 @@ export const updateUser = async (req: IGetUserAuthInfoRequest, res: Response, ne
             await User.findByIdAndUpdate(
                 req.user._id,
                 { $set: req.body },
-                { new: true, fields: { password: 0 } }
+                // { new: true, fields: { password: 0 } }
+                { new: true }
             )
         }
 

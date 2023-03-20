@@ -26,7 +26,8 @@ const updateUserSchema = Joi.object({
     username: Joi.string(),
     email: Joi.string(),
     password: Joi.string(),
-    phone: Joi.number().integer(),
+    phone: Joi.string().regex(/^[0-9]{10,15}$/).messages({'string.pattern.base': `Phone number must be between 10 and 15 digits.`}).required()
+
 })
 
 const createAddressSchema = Joi.object({
@@ -34,7 +35,7 @@ const createAddressSchema = Joi.object({
     street2: Joi.string().required(),
     country: Joi.string().required(),
     city: Joi.string().required(),
-    zipCode: Joi.number().integer().positive().required()
+    zipCode: Joi.string().regex(/^\d{5}(-\d{4})?$/).messages({'string.pattern.base': `invalid Zip Code.`}).required()
 })
 
 const updateAddressSchema = Joi.object({
@@ -42,7 +43,7 @@ const updateAddressSchema = Joi.object({
     street2: Joi.string(),
     country: Joi.string(),
     city: Joi.string(),
-    zipCode: Joi.number().integer().positive()
+    zipCode: Joi.string().regex(/^\d{5}(-\d{4})?$/).messages({'string.pattern.base': `invalid Zip Code.`})
 })
 
 const createBookSchema = Joi.object({
