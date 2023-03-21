@@ -1,58 +1,64 @@
-import { Schema, model, Types, ObjectId } from "mongoose";
-import { IUser } from "./User";
+import { Schema, model, Types } from "mongoose";
 import { IAddress } from "./Address";
+import { IUser } from "./User";
+import { IBook } from "./Book";
 
+export enum OrderPaymentStatus {
+    PENDING = 'pending',
+    EXPIRED = 'expired',
+    FAILED = 'failed',
+    PAID = 'paid',
+}
 
 export enum OrderStatus {
-    FAILED = 'failed',
     PENDING = 'pending',
-    ACCEPTED = 'accepted',
     CANCELED = 'canceled',
     SHIPPED = 'shipped',
     DELIVERED = 'delivered',
+    PICKED = 'picked',
     REFUNDED = 'refunded',
 }
 
-export interface IOrderItem {
-    seller: IUser
-    product: { _id: Types.ObjectId, name: String, imgPath: String, price: Number, quantity: Number }
-    status: String
-    trackingNumber?: Number
+export interface OrderProduct extends Pick<IBook,  'name' | 'imgPath' | 'price'> {
+    original: IBook
+    quantity: number
 }
 
 export interface IOrder {
     _id: Types.ObjectId
+    seller: IUser
     customer: IUser
-    products: IOrderItem[]
-    status: String
+    product: OrderProduct
+    status: OrderStatus
+    paymentStatus: OrderPaymentStatus
+    trackingNumber?: String
+    checkoutSessionId: String
     address: Omit<IAddress, 'user'>
 }
 
 const orderSchema = new Schema<IOrder>({
 
+    seller: { type: Schema.Types.ObjectId, ref: 'User' },
+
     customer: { type: Schema.Types.ObjectId, ref: 'User' },
 
-    products: [{
-        seller: { type: Schema.Types.ObjectId, ref: 'User' },
-
-        product: { _id: Schema.Types.ObjectId, name: String, imgPath: String, price: Number, quantity: Number },
-
-        status: { type: String, enum: OrderStatus, default: OrderStatus.PENDING },
-        
-        trackingNumber: { type: Number }
-    }],
-
-    address: {
-        street1: String,
-
-        street2: String,
-
-        country: String,
-
-        city: String,
-
-        zipCode: String
+    product: {
+        original: { type: Schema.Types.ObjectId, ref: 'Book' },
+        name: String,
+        imgPath: String,
+        price: Number,
+        quantity: Number,
     },
+
+    status: { type: String, enum: OrderStatus, default: OrderStatus.PENDING },
+
+    paymentStatus: { type: String, enum: OrderPaymentStatus, default: OrderPaymentStatus.PENDING },
+
+    trackingNumber: { type: Number },
+
+    checkoutSessionId: { type: String, select: false },
+
+    address: { street1: String, street2: String, country: String, city: String, zipCode: String },
 
 }, { timestamps: true })
 

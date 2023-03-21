@@ -47,8 +47,7 @@ export const findCartItemsWithProducts = async (req: IGetUserAuthInfoRequest, re
         let cart: ICart = await Cart.findOne({owner: userId}, '-_id items').populate<{items: ICartItem[]}>({
             path: 'items',
             populate: {
-                path: 'product', select: 'name imgPath price stockCount',
-                populate: { path: 'author', select: '-_id name' }
+                path: 'product', select: 'name imgPath price stockCount'
             }
 
         })

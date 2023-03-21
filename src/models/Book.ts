@@ -45,7 +45,6 @@ export interface IBook {
     genre: String
     year: number
     bookLanguage: string
-    rating: number
     description: string
     imgPath: string
     archived: boolean
