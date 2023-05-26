@@ -1,4 +1,4 @@
-export const createError = (status, message) => {
+export const createError = (status: any, message: any) => {
 
     const error: any = new Error(message)
 

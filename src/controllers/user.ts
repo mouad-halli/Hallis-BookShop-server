@@ -151,7 +151,7 @@ export const setUserImage = async (req: IGetUserAuthInfoRequest, res: Response, 
     }
 }
 
-export const deleteUser = async (req, res, next) => {
+export const deleteUser = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
 	try {
 
         await User.findByIdAndDelete(req.params.id)
@@ -162,7 +162,7 @@ export const deleteUser = async (req, res, next) => {
     }
 }
 
-export const getUser = async (req, res, next) => {
+export const getUser = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
 	try {
 
         const user = await User.findById(req.params.id)
@@ -173,7 +173,7 @@ export const getUser = async (req, res, next) => {
     }
 }
 
-export const getAllUsers = async (req, res, next) => {
+export const getAllUsers = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
 	try {
         const users = await User.find()
         res.status(OK).json(users)

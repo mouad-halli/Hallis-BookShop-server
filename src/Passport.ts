@@ -8,7 +8,7 @@ passport.use(new Strategy({
         callbackURL: `${SERVER_URL}/auth/google/callback`,
         passReqToCallback   : true
     },
-    function(request, accessToken, refreshToken, profile, done) {
+    function(request: any, accessToken: any, refreshToken: any, profile: any, done: any) {
         const {id, name, picture, email} = profile
         const fullPicture = picture.substring(0, picture.indexOf("=s"))
         done(null, {id, name, fullPicture, email})

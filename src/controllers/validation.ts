@@ -4,7 +4,7 @@ import httpCodes from "http-status-codes";
 
 const { BAD_REQUEST } = httpCodes
 
-export const validateBody = (validator) => {
+export const validateBody = (validator: any) => {
 
     return (req: Request, res: Response, next: NextFunction) => {
 

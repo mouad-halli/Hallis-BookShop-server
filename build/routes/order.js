@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var express_1 = require("express");
+var verify_1 = require("../utils/verify");
+var order_1 = require("../controllers/order");
+var router = (0, express_1.Router)();
+router.get('/buy', verify_1.verifyToken, order_1.getUserBuyOrders);
+router.get('/buy/count', verify_1.verifyToken, order_1.getUserBuyOrdersCount);
+router.get('/sell', verify_1.verifyToken, order_1.getUserSellOrders);
+router.get('/sell/count', verify_1.verifyToken, order_1.getUserSellOrdersCount);
+router.put('/status-shipped', verify_1.verifyToken, order_1.setOrderItemStatusShipped);
+router.put('/status-delivered', verify_1.verifyToken, order_1.setOrderItemStatusDelivered);
+router.put('/status-canceled', verify_1.verifyToken, order_1.setOrderItemStatusCanceled);
+router.put('/status-picked', verify_1.verifyToken, order_1.setOrderItemStatusPicked);
+exports.default = router;

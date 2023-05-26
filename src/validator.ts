@@ -4,7 +4,7 @@ import { bookGenres, bookLanguage } from "./models/Book"
 const validator = (
     validationSchema: Joi.Schema,
     validationOptions: Joi.ValidationOptions
-    ) => (payload) => {
+    ) => (payload: any) => {
         return validationSchema.validate(payload, validationOptions)
 }
 

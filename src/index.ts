@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import { CLIENT_URL, PORT, UPLOAD_LOCATION } from './config/envConfig'
 import { connectToDatabase } from './config/databaseConf'
 import authRoute from './routes/auth'
@@ -42,7 +42,7 @@ app.use('/book', bookRoute)
 app.use('/cart', cartRoute)
 app.use('/order', order)
 
-app.use((error, req, res, next) => {
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
 	const errorStatus = error.status || 500
 	const errorMessage = error.message || StatusCodes.INTERNAL_SERVER_ERROR
 

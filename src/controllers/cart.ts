@@ -12,7 +12,7 @@ export const findCartItems = async (req: IGetUserAuthInfoRequest, res: Response,
     try {
         const userId: Types.ObjectId = req.user._id
         // let subTotal: number = 0
-        let items = []
+        let items:any[] = []
 
         // const cart: ICart = await Cart.findOne({owner: userId}, '-_id -items._id').populate<{items: ICartItem[]}>({
         //     path: 'items.product', select: 'price'
@@ -42,7 +42,7 @@ export const findCartItemsWithProducts = async (req: IGetUserAuthInfoRequest, re
     try {
         const userId: Types.ObjectId = req.user._id
         let subTotal: number = 0
-        let cartItems = []
+        let cartItems: any[] = []
 
         let cart: ICart = await Cart.findOne({owner: userId}, '-_id items').populate<{items: ICartItem[]}>({
             path: 'items',
