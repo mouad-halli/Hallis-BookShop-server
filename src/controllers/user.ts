@@ -10,7 +10,6 @@ import { SERVER_URL } from '../config/envConfig'
 const { OK, CREATED, BAD_REQUEST, NOT_FOUND } = StatusCodes
 
 export const me = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
-
     try {
 
         const me = await User.findById(req.user._id, "-__v -googleId -books")

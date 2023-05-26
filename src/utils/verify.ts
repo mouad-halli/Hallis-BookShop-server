@@ -5,11 +5,10 @@ import { JWT_SECRET } from "../config/envConfig";
 import { createError } from "./errors";
 
 export const verifyToken = (req, res, next) => {
-    // let token: string = req.headers.authorization
     const token = req.cookies.accessToken
     if (!token)
         return next(createError(401, 'Not Authanticated'))
-    // token = token.split(' ')[1]
+
     
     jwt.verify(token, JWT_SECRET, async (err, payload) => {
         if (err)

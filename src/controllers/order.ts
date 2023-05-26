@@ -7,10 +7,17 @@ import { isValidObjectId } from "mongoose";
 
 const { OK, BAD_REQUEST, FORBIDDEN, NOT_FOUND } = StatusCodes
 
-
 export const getUserBuyOrders = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
-        const orders = await Order.find({customer: req.user._id}, "-customer -checkoutSessionId").populate('seller', '-_id imgPath firstname lastname')
+
+        if (typeof req.query.page !== 'string' || typeof req.query.limit !== 'string')
+            return next(createError(BAD_REQUEST, 'invalid query params'))
+
+        const page = parseInt(req.query.page)
+        const limitCount = parseInt(req.query.limit) || 10
+        const skipCount = limitCount * (page - 1)
+
+        const orders = await Order.find({customer: req.user._id}, "-customer -checkoutSessionId").populate('seller', '-_id imgPath firstname lastname').skip(skipCount).limit(limitCount)
 
         res.status(OK).json(orders)
     } catch (error) {
@@ -18,11 +25,35 @@ export const getUserBuyOrders = async (req: IGetUserAuthInfoRequest, res: Respon
     }
 }
 
+export const getUserBuyOrdersCount = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
+    try {
+        res.status(OK).json(await Order.count({customer: req.user._id}))
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const getUserSellOrders = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
-        const orders = await Order.find({seller: req.user._id}, "-seller -checkoutSessionId").populate('customer', '-_id imgPath firstname lastname phone email')
+
+        if (typeof req.query.page !== 'string' || typeof req.query.limit !== 'string')
+            return next(createError(BAD_REQUEST, 'invalid query params'))
+
+        const page = parseInt(req.query.page)
+        const limitCount = parseInt(req.query.limit) || 10
+        const skipCount = limitCount * (page - 1)
+
+        const orders = await Order.find({seller: req.user._id}, "-seller -checkoutSessionId").populate('customer', '-_id imgPath firstname lastname phone email').skip(skipCount).limit(limitCount)
 
         res.status(OK).json(orders)
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const getUserSellOrdersCount = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
+    try {
+        res.status(OK).json(await Order.count({seller: req.user._id}))
     } catch (error) {
         next(error)
     }
